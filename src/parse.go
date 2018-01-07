@@ -158,7 +158,6 @@ func Parse(fileContents []byte) (Highlights, error) {
 	highlights := make([]Highlight, 0)
 
 	for _, line := range lines {
-		fmt.Println("===== start")
 		highlight, err := ParseHighlight(line)
 
 		if err != nil {
@@ -174,6 +173,8 @@ func Format(data Highlights, format string) (string, error) {
 	switch format {
 	case "json":
 		return data.json()
+	case "markdown":
+		return EmitMarkdown(data)
 	}
 	return "hi", nil
 }
@@ -191,14 +192,7 @@ func RunParse(filename string, output string) error {
 	}
 
 	data, err := Parse(fileContents)
-	fmt.Println(" === data ===")
-	// fmt.Println(data)
-
-	// clean up results
-	// print
-
-	format := "json"
-	text, err := Format(data, format)
+	text, err := Format(data, output)
 
 	if err != nil {
 		return err
