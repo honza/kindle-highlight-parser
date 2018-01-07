@@ -100,8 +100,8 @@ func ParseHighlight(line string) (Highlight, error) {
 	parts := splitAndRemove(titleAndAuthorLine, "(")
 
 	title := trim(parts[0])
-	author := Author{name: trim(last(parts))}
-	book := Book{title: title, author: author}
+	author := Author{Name: trim(last(parts))}
+	book := Book{Title: title, Author: author}
 
 	locationAndTimestampLine := sublines[1]
 	parts = strings.Split(locationAndTimestampLine, "|")
@@ -127,7 +127,7 @@ func ParseHighlight(line string) (Highlight, error) {
 			locEnd = locStart
 		}
 
-		location = Location{start: locStart, end: locEnd, page: page}
+		location = Location{Start: locStart, End: locEnd, Page: page}
 		timestamp = ParseTimestamp(parts[2])
 	case 2:
 		// There is no page, just a location
@@ -143,13 +143,12 @@ func ParseHighlight(line string) (Highlight, error) {
 			locEnd = locStart
 		}
 		timestamp = ParseTimestamp(parts[1])
-		location = Location{start: locStart, end: locEnd, page: 0}
+		location = Location{Start: locStart, End: locEnd, Page: 0}
 	default:
-		location = Location{start: 0, end: 0, page: 0}
+		location = Location{Start: 0, End: 0, Page: 0}
 	}
 
-	return Highlight{book: book, location: location, timestamp: timestamp,
-		content: sublines[2]}, nil
+	return Highlight{Book: book, Location: location, Timestamp: timestamp, Content: sublines[2]}, nil
 
 }
 
@@ -171,6 +170,14 @@ func Parse(fileContents []byte) (Highlights, error) {
 	return highlights, nil
 }
 
+func Format(data Highlights, format string) (string, error) {
+	switch format {
+	case "json":
+		return data.json()
+	}
+	return "hi", nil
+}
+
 func RunParse(filename string, output string) error {
 	v := ValidateOutputFormat(output)
 	if v != nil {
@@ -185,11 +192,18 @@ func RunParse(filename string, output string) error {
 
 	data, err := Parse(fileContents)
 	fmt.Println(" === data ===")
-	fmt.Println(data)
+	// fmt.Println(data)
 
-	// parse file
 	// clean up results
 	// print
 
+	format := "json"
+	text, err := Format(data, format)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(text)
 	return nil
 }
