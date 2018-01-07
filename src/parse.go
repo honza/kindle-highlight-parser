@@ -152,10 +152,10 @@ func ParseHighlight(line string) (Highlight, error) {
 
 }
 
-func Parse(fileContents []byte) (Highlights, error) {
+func Parse(fileContents []byte) (NewHighlights, error) {
 	fileContentsString := byteArrayToString(fileContents)
 	lines := splitAndRemove(fileContentsString, "==========")
-	highlights := make([]Highlight, 0)
+	highlights := NewHighlights{}
 
 	for _, line := range lines {
 		highlight, err := ParseHighlight(line)
@@ -163,13 +163,35 @@ func Parse(fileContents []byte) (Highlights, error) {
 		if err != nil {
 			continue
 		}
-		highlights = append(highlights, highlight)
+
+		name := highlight.Book.Author.Name
+		title := highlight.Book.Title
+
+		existing, present := highlights[name]
+
+		if present {
+			existingTitle, presentTitle := existing[title]
+
+			single := Single{Location: highlight.Location, Timestamp: highlight.Timestamp, Content: highlight.Content}
+
+			if presentTitle {
+				existingTitle = append(existingTitle, single)
+			} else {
+				existingTitle = []Single{single}
+			}
+			existing[title] = existingTitle
+		} else {
+			existing = NewAuthor{title: NewBook{}}
+		}
+
+		highlights[name] = existing
+
 	}
 
 	return highlights, nil
 }
 
-func Format(data Highlights, format string) (string, error) {
+func Format(data NewHighlights, format string) (string, error) {
 	switch format {
 	case "json":
 		return data.json()

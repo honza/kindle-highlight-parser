@@ -31,11 +31,18 @@ type Highlight struct {
 
 type Highlights []Highlight
 
+type Single struct {
+	Location  Location  `json:"location"`
+	Timestamp time.Time `json:"timestamp"`
+	Content   string    `json:"content"`
+}
+type NewBook []Single
+type NewAuthor map[string]NewBook
+type NewHighlights map[string]NewAuthor
+
 type JsonFormatter interface {
 	json() (string, error)
 }
-
-type OutputEmitter func(hs Highlights) (string, error)
 
 func (h Highlight) json() (string, error) {
 	out, err := json.MarshalIndent(h, "", "  ")
@@ -48,6 +55,17 @@ func (h Highlight) json() (string, error) {
 }
 
 func (hs Highlights) json() (string, error) {
+	out, err := json.MarshalIndent(hs, "", "  ")
+
+	if err != nil {
+		return "", err
+
+	}
+
+	return string(out), nil
+}
+
+func (hs NewHighlights) json() (string, error) {
 	out, err := json.MarshalIndent(hs, "", "  ")
 
 	if err != nil {
@@ -80,31 +98,47 @@ func word_wrap(text string, lineWidth int) string {
 
 }
 
-func HighlightEmitMarkdown(h Highlight) (string, error) {
-	buf := bytes.NewBufferString("")
-
-	buf.WriteString(h.Book.Title)
-	buf.WriteString("\n")
-	buf.WriteString(strings.Repeat("=", len(h.Book.Title)-3))
-	buf.WriteString("\n")
-	buf.WriteString("\n*")
-	buf.WriteString(h.Book.Author.Name)
-	buf.WriteString("*\n\n")
-	buf.WriteString(word_wrap(h.Content, 79))
-	buf.WriteString("\n\nPublished: ")
-	buf.WriteString(h.Timestamp.String())
+func SingleEmitMarkdown(buf *bytes.Buffer, single Single) error {
+	buf.WriteString(word_wrap(single.Content, 79))
+	buf.WriteString("\n\n")
+	buf.WriteString(single.Timestamp.String())
 	buf.WriteString("\n\n")
 
-	return buf.String(), nil
+	return nil
 }
 
-func EmitMarkdown(hs Highlights) (string, error) {
-	result := make([]string, 0)
+func AuthorEmitMarkdown(buf *bytes.Buffer, author string, h NewAuthor) error {
+	buf.WriteString(author)
+	buf.WriteString("\n")
+	buf.WriteString(strings.Repeat("=", len(author)))
+	buf.WriteString("\n\n")
 
-	for _, h := range hs {
-		out, _ := HighlightEmitMarkdown(h)
-		result = append(result, out)
+	for bookName, book := range h {
+		buf.WriteString(bookName)
+		buf.WriteString("\n")
+		buf.WriteString(strings.Repeat("-", len(bookName)))
+		buf.WriteString("\n\n")
+
+		for _, single := range book {
+			SingleEmitMarkdown(buf, single)
+		}
+
 	}
 
-	return strings.Join(result, "\n"), nil
+	return nil
+}
+
+func EmitMarkdown(hs NewHighlights) (string, error) {
+	buf := bytes.NewBufferString("")
+
+	for author := range hs {
+		err := AuthorEmitMarkdown(buf, author, hs[author])
+		if err != nil {
+			return "", err
+		}
+		buf.WriteString("\n")
+
+	}
+
+	return buf.String(), nil
 }
