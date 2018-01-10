@@ -12,6 +12,12 @@ Flags:
   -o, --output string   output format (default "markdown")
 ```
 
+Todo:
+
+* Add installation instructions (ie `go get`)
+* Sort highlights by author, book, and timestamp
+* Remove partial highlights
+
 License
 -------
 
