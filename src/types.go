@@ -101,9 +101,6 @@ func word_wrap(text string, lineWidth int, prefix string) string {
 
 }
 
-func SingleEmitMarkdown(buf *bytes.Buffer, single Single) error {
-	buf.WriteString(word_wrap(single.Content, 79))
-	buf.WriteString("\n\n")
 func FormatLocation(location Location) string {
 	if location.Start != 0 && location.End != 0 && location.Page != 0 {
 		return fmt.Sprintf("Location: %d-%d, Page: %d, ", location.Start, location.End, location.Page)
@@ -121,6 +118,10 @@ func FormatLocation(location Location) string {
 	return fmt.Sprintf("")
 }
 
+func SingleEmitMarkdown(buf *bytes.Buffer, single Single) error {
+	buf.WriteString(word_wrap(single.Content, 79, "> "))
+	buf.WriteString("\n\n")
+	buf.WriteString(FormatLocation(single.Location))
 	buf.WriteString(single.Timestamp.String())
 	buf.WriteString("\n\n")
 
