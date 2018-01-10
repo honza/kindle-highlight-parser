@@ -3,6 +3,7 @@ package src
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -77,16 +78,18 @@ func (hs NewHighlights) json() (string, error) {
 }
 
 // https://gist.github.com/kennwhite/306317d81ab4a885a965e25aa835b8ef
-func word_wrap(text string, lineWidth int) string {
+func word_wrap(text string, lineWidth int, prefix string) string {
 	words := strings.Fields(strings.TrimSpace(text))
+
+	lineWidth = lineWidth - len(prefix)
 	if len(words) == 0 {
 		return text
 	}
-	wrapped := words[0]
+	wrapped := prefix + words[0]
 	spaceLeft := lineWidth - len(wrapped)
 	for _, word := range words[1:] {
 		if len(word)+1 > spaceLeft {
-			wrapped += "\n" + word
+			wrapped += "\n" + prefix + word
 			spaceLeft = lineWidth - len(word)
 		} else {
 			wrapped += " " + word
