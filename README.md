@@ -17,9 +17,16 @@ Flags:
   -o, --output string   output format (default "markdown")
 ```
 
-Todo:
+Install
+-------
 
-* Add installation instructions (ie `go get`)
+```
+go get -u github.com/honza/kindle-highlight-parser
+```
+
+Todo
+----
+
 * Remove partial highlights
 
 License
