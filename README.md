@@ -20,7 +20,6 @@ Flags:
 Todo:
 
 * Add installation instructions (ie `go get`)
-* Sort highlights by author, book, and timestamp
 * Remove partial highlights
 
 License
