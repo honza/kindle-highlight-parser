@@ -202,7 +202,10 @@ func Format(w io.Writer, data NewHighlights, format string) error {
 		}
 		w.Write(out)
 	case "markdown":
-		EmitMarkdown(w, data)
+		err := EmitMarkdown(w, data)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
