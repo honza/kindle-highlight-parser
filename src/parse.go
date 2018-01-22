@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -178,6 +179,7 @@ func Parse(fileContents []byte) (NewHighlights, error) {
 
 			if presentTitle {
 				existingTitle = append(existingTitle, single)
+				sort.Sort(existingTitle)
 			} else {
 				existingTitle = []Single{single}
 			}

@@ -41,6 +41,18 @@ type NewBook []Single
 type NewAuthor map[string]NewBook
 type NewHighlights map[string]NewAuthor
 
+func (b NewBook) Len() int {
+	return len(b)
+}
+
+func (b NewBook) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
+}
+
+func (b NewBook) Less(i, j int) bool {
+	return b[i].Timestamp.Before(b[j].Timestamp)
+}
+
 func (hs NewHighlights) json() ([]byte, error) {
 	out, err := json.MarshalIndent(hs, "", "  ")
 
