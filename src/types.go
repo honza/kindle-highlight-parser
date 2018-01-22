@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const MARKDOWN_WIDTH = 79
+
 type Author struct {
 	Name string `json:"name"`
 }
@@ -107,7 +109,7 @@ func FormatLocation(location Location) string {
 }
 
 func SingleEmitMarkdown(w io.Writer, single Single) error {
-	fmt.Fprint(w, word_wrap(single.Content, 79, "> "))
+	fmt.Fprint(w, word_wrap(single.Content, MARKDOWN_WIDTH, "> "))
 	fmt.Fprint(w, "\n\n")
 	fmt.Fprint(w, FormatLocation(single.Location))
 	fmt.Fprint(w, single.Timestamp.String())
@@ -117,12 +119,12 @@ func SingleEmitMarkdown(w io.Writer, single Single) error {
 }
 
 func TruncateBookTitle(s string) string {
-	if len(s) < 80 {
+	if len(s) < MARKDOWN_WIDTH {
 		return s
 	}
 
 	suffix := " [...]"
-	return s[0:79-len(suffix)] + suffix
+	return s[0:MARKDOWN_WIDTH-len(suffix)] + suffix
 
 }
 
