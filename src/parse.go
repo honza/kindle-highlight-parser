@@ -53,7 +53,7 @@ func removeEmptyStrings(s []string) []string {
 }
 
 func trim(s string) string {
-	return strings.Trim(s, " ()")
+	return strings.Trim(s, " ()\ufeff")
 
 }
 
