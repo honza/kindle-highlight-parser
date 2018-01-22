@@ -116,6 +116,16 @@ func SingleEmitMarkdown(w io.Writer, single Single) error {
 	return nil
 }
 
+func TruncateBookTitle(s string) string {
+	if len(s) < 80 {
+		return s
+	}
+
+	suffix := " [...]"
+	return s[0:79-len(suffix)] + suffix
+
+}
+
 func AuthorEmitMarkdown(w io.Writer, author string, h NewAuthor) error {
 	fmt.Fprint(w, author)
 	fmt.Fprint(w, "\n")
@@ -131,9 +141,10 @@ func AuthorEmitMarkdown(w io.Writer, author string, h NewAuthor) error {
 	sort.Strings(books)
 
 	for _, book := range books {
-		fmt.Fprint(w, book)
+		bookTitle := TruncateBookTitle(book)
+		fmt.Fprint(w, bookTitle)
 		fmt.Fprint(w, "\n")
-		fmt.Fprint(w, strings.Repeat("-", len(book)))
+		fmt.Fprint(w, strings.Repeat("-", len(bookTitle)))
 		fmt.Fprint(w, "\n\n")
 
 		for _, single := range h[book] {
