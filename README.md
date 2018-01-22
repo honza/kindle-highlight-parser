@@ -24,6 +24,8 @@ Install
 go get -u github.com/honza/kindle-highlight-parser
 ```
 
+Or grab a prebuilt binary from [GitHub][1].
+
 Todo
 ----
 
@@ -33,3 +35,6 @@ License
 -------
 
 GPLv3
+
+
+[1]: https://github.com/honza/kindle-highlight-parser/releases
