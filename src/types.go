@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sort"
 	"strings"
 	"time"
 )
@@ -121,13 +122,21 @@ func AuthorEmitMarkdown(w io.Writer, author string, h NewAuthor) error {
 	fmt.Fprint(w, strings.Repeat("=", len(author)))
 	fmt.Fprint(w, "\n\n")
 
-	for bookName, book := range h {
-		fmt.Fprint(w, bookName)
+	books := make([]string, 0, len(h))
+
+	for book := range h {
+		books = append(books, book)
+	}
+
+	sort.Strings(books)
+
+	for _, book := range books {
+		fmt.Fprint(w, book)
 		fmt.Fprint(w, "\n")
-		fmt.Fprint(w, strings.Repeat("-", len(bookName)))
+		fmt.Fprint(w, strings.Repeat("-", len(book)))
 		fmt.Fprint(w, "\n\n")
 
-		for _, single := range book {
+		for _, single := range h[book] {
 			SingleEmitMarkdown(w, single)
 		}
 
@@ -137,8 +146,15 @@ func AuthorEmitMarkdown(w io.Writer, author string, h NewAuthor) error {
 }
 
 func EmitMarkdown(w io.Writer, hs NewHighlights) error {
+	authors := make([]string, 0, len(hs))
 
 	for author := range hs {
+		authors = append(authors, author)
+	}
+
+	sort.Strings(authors)
+
+	for _, author := range authors {
 		err := AuthorEmitMarkdown(w, author, hs[author])
 		if err != nil {
 			return err
