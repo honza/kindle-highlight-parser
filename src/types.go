@@ -1,9 +1,9 @@
 package src
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 )
@@ -41,40 +41,15 @@ type NewBook []Single
 type NewAuthor map[string]NewBook
 type NewHighlights map[string]NewAuthor
 
-type JsonFormatter interface {
-	json() (string, error)
-}
-
-func (h Highlight) json() (string, error) {
-	out, err := json.MarshalIndent(h, "", "  ")
-
-	if err != nil {
-		return "", err
-	}
-
-	return string(out), nil
-}
-
-func (hs Highlights) json() (string, error) {
+func (hs NewHighlights) json() ([]byte, error) {
 	out, err := json.MarshalIndent(hs, "", "  ")
 
 	if err != nil {
-		return "", err
+		return []byte{}, err
 
 	}
 
-	return string(out), nil
-}
-
-func (hs NewHighlights) json() (string, error) {
-	out, err := json.MarshalIndent(hs, "", "  ")
-
-	if err != nil {
-		return "", err
-
-	}
-
-	return string(out), nil
+	return out, nil
 }
 
 // https://gist.github.com/kennwhite/306317d81ab4a885a965e25aa835b8ef
@@ -118,30 +93,30 @@ func FormatLocation(location Location) string {
 	return fmt.Sprintf("")
 }
 
-func SingleEmitMarkdown(buf *bytes.Buffer, single Single) error {
-	buf.WriteString(word_wrap(single.Content, 79, "> "))
-	buf.WriteString("\n\n")
-	buf.WriteString(FormatLocation(single.Location))
-	buf.WriteString(single.Timestamp.String())
-	buf.WriteString("\n\n")
+func SingleEmitMarkdown(w io.Writer, single Single) error {
+	fmt.Fprint(w, word_wrap(single.Content, 79, "> "))
+	fmt.Fprint(w, "\n\n")
+	fmt.Fprint(w, FormatLocation(single.Location))
+	fmt.Fprint(w, single.Timestamp.String())
+	fmt.Fprint(w, "\n\n")
 
 	return nil
 }
 
-func AuthorEmitMarkdown(buf *bytes.Buffer, author string, h NewAuthor) error {
-	buf.WriteString(author)
-	buf.WriteString("\n")
-	buf.WriteString(strings.Repeat("=", len(author)))
-	buf.WriteString("\n\n")
+func AuthorEmitMarkdown(w io.Writer, author string, h NewAuthor) error {
+	fmt.Fprint(w, author)
+	fmt.Fprint(w, "\n")
+	fmt.Fprint(w, strings.Repeat("=", len(author)))
+	fmt.Fprint(w, "\n\n")
 
 	for bookName, book := range h {
-		buf.WriteString(bookName)
-		buf.WriteString("\n")
-		buf.WriteString(strings.Repeat("-", len(bookName)))
-		buf.WriteString("\n\n")
+		fmt.Fprint(w, bookName)
+		fmt.Fprint(w, "\n")
+		fmt.Fprint(w, strings.Repeat("-", len(bookName)))
+		fmt.Fprint(w, "\n\n")
 
 		for _, single := range book {
-			SingleEmitMarkdown(buf, single)
+			SingleEmitMarkdown(w, single)
 		}
 
 	}
@@ -149,17 +124,16 @@ func AuthorEmitMarkdown(buf *bytes.Buffer, author string, h NewAuthor) error {
 	return nil
 }
 
-func EmitMarkdown(hs NewHighlights) (string, error) {
-	buf := bytes.NewBufferString("")
+func EmitMarkdown(w io.Writer, hs NewHighlights) error {
 
 	for author := range hs {
-		err := AuthorEmitMarkdown(buf, author, hs[author])
+		err := AuthorEmitMarkdown(w, author, hs[author])
 		if err != nil {
-			return "", err
+			return err
 		}
-		buf.WriteString("\n")
+		fmt.Fprint(w, "\n")
 
 	}
 
-	return buf.String(), nil
+	return nil
 }

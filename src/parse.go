@@ -1,8 +1,10 @@
 package src
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"strconv"
 	"strings"
@@ -191,14 +193,18 @@ func Parse(fileContents []byte) (NewHighlights, error) {
 	return highlights, nil
 }
 
-func Format(data NewHighlights, format string) (string, error) {
+func Format(w io.Writer, data NewHighlights, format string) error {
 	switch format {
 	case "json":
-		return data.json()
+		out, err := data.json()
+		if err != nil {
+			return err
+		}
+		w.Write(out)
 	case "markdown":
-		return EmitMarkdown(data)
+		EmitMarkdown(w, data)
 	}
-	return "hi", nil
+	return nil
 }
 
 func RunParse(filename string, output string) error {
@@ -213,13 +219,16 @@ func RunParse(filename string, output string) error {
 		return err
 	}
 
+	w := new(bytes.Buffer)
+
 	data, err := Parse(fileContents)
-	text, err := Format(data, output)
+	err = Format(w, data, output)
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(text)
+	fmt.Println(w)
+
 	return nil
 }
