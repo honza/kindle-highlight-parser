@@ -1,7 +1,6 @@
 package src
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -55,18 +54,6 @@ func (b NewBook) Swap(i, j int) {
 
 func (b NewBook) Less(i, j int) bool {
 	return b[i].Timestamp.Before(b[j].Timestamp)
-}
-
-func EmitJson(w io.Writer, hs Highlights) error {
-	out, err := json.MarshalIndent(hs, "", "  ")
-
-	if err != nil {
-		return err
-	}
-
-	w.Write(out)
-
-	return nil
 }
 
 // https://gist.github.com/kennwhite/306317d81ab4a885a965e25aa835b8ef
