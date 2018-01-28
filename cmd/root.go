@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/honza/kindle-highlight-parser/src"
 	"github.com/spf13/cobra"
@@ -14,11 +15,14 @@ var RootCmd = &cobra.Command{
 	Short: "kindle-highlight-parser",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		result := src.RunParse(args[0], OutputType)
+		w := new(bytes.Buffer)
+		result := src.RunParse(w, args[0], OutputType)
 		if result != nil {
 			fmt.Println("ERROR:", result)
 			os.Exit(1)
 		}
+
+		fmt.Println(w)
 	},
 }
 

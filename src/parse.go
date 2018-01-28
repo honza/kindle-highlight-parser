@@ -1,7 +1,6 @@
 package src
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -381,7 +380,7 @@ func Format(w io.Writer, data Highlights, format string) error {
 	return nil
 }
 
-func RunParse(filename string, output string) error {
+func RunParse(w io.Writer, filename string, output string) error {
 	v := ValidateOutputFormat(output)
 	if v != nil {
 		return v
@@ -393,16 +392,12 @@ func RunParse(filename string, output string) error {
 		return err
 	}
 
-	w := new(bytes.Buffer)
-
 	data, err := Parse(fileContents)
 	err = Format(w, data, output)
 
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(w)
 
 	return nil
 }
