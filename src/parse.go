@@ -37,8 +37,6 @@ type Highlight struct {
 	Content   string    `json:"content"`
 }
 
-type Highlights []Highlight
-
 type Single struct {
 	Location  Location  `json:"location"`
 	Timestamp time.Time `json:"timestamp"`
@@ -46,7 +44,7 @@ type Single struct {
 }
 type NewBook []Single
 type NewAuthor map[string]NewBook
-type NewHighlights map[string]NewAuthor
+type Highlights map[string]NewAuthor
 
 func (b NewBook) Len() int {
 	return len(b)
@@ -60,7 +58,7 @@ func (b NewBook) Less(i, j int) bool {
 	return b[i].Timestamp.Before(b[j].Timestamp)
 }
 
-func (hs NewHighlights) json() ([]byte, error) {
+func (hs Highlights) json() ([]byte, error) {
 	out, err := json.MarshalIndent(hs, "", "  ")
 
 	if err != nil {
@@ -162,7 +160,7 @@ func AuthorEmitMarkdown(w io.Writer, author string, h NewAuthor) error {
 	return nil
 }
 
-func EmitMarkdown(w io.Writer, hs NewHighlights) error {
+func EmitMarkdown(w io.Writer, hs Highlights) error {
 	authors := make([]string, 0, len(hs))
 
 	for author := range hs {
@@ -326,10 +324,10 @@ func ParseHighlight(line string) (Highlight, error) {
 
 }
 
-func Parse(fileContents []byte) (NewHighlights, error) {
+func Parse(fileContents []byte) (Highlights, error) {
 	fileContentsString := byteArrayToString(fileContents)
 	lines := splitAndRemove(fileContentsString, "==========")
-	highlights := NewHighlights{}
+	highlights := Highlights{}
 
 	for _, line := range lines {
 		highlight, err := ParseHighlight(line)
@@ -366,7 +364,7 @@ func Parse(fileContents []byte) (NewHighlights, error) {
 	return highlights, nil
 }
 
-func Format(w io.Writer, data NewHighlights, format string) error {
+func Format(w io.Writer, data Highlights, format string) error {
 	switch format {
 	case "json":
 		out, err := data.json()
