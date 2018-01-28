@@ -57,15 +57,16 @@ func (b NewBook) Less(i, j int) bool {
 	return b[i].Timestamp.Before(b[j].Timestamp)
 }
 
-func (hs Highlights) json() ([]byte, error) {
+func EmitJson(w io.Writer, hs Highlights) error {
 	out, err := json.MarshalIndent(hs, "", "  ")
 
 	if err != nil {
-		return []byte{}, err
-
+		return err
 	}
 
-	return out, nil
+	w.Write(out)
+
+	return nil
 }
 
 // https://gist.github.com/kennwhite/306317d81ab4a885a965e25aa835b8ef
@@ -366,11 +367,10 @@ func Parse(fileContents []byte) (Highlights, error) {
 func Format(w io.Writer, data Highlights, format string) error {
 	switch format {
 	case "json":
-		out, err := data.json()
+		err := EmitJson(w, data)
 		if err != nil {
 			return err
 		}
-		w.Write(out)
 	case "markdown":
 		err := EmitMarkdown(w, data)
 		if err != nil {
