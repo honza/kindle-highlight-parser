@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-const MARKDOWN_WIDTH = 79
-
 type Author struct {
 	Name string `json:"name"`
 }

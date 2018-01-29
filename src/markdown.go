@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+const MARKDOWN_WIDTH = 79
+
 func SingleEmitMarkdown(w io.Writer, single Single) error {
 	fmt.Fprint(w, word_wrap(single.Content, MARKDOWN_WIDTH, "> "))
 	fmt.Fprint(w, "\n\n")
