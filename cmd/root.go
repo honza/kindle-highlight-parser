@@ -8,12 +8,15 @@ import (
 	"os"
 )
 
+const Version = "0.1.0"
+
 var OutputType string
 
 var RootCmd = &cobra.Command{
-	Use:   "kindle-highlight-parser <input file>",
-	Short: "kindle-highlight-parser",
-	Args:  cobra.ExactArgs(1),
+	Use:     "kindle-highlight-parser <input file>",
+	Short:   "kindle-highlight-parser",
+	Args:    cobra.ExactArgs(1),
+	Version: Version,
 	Run: func(cmd *cobra.Command, args []string) {
 		w := new(bytes.Buffer)
 		result := src.RunParse(w, args[0], OutputType)
