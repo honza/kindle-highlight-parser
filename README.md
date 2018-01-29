@@ -3,8 +3,8 @@ Kindle highlight parser
 
 When I read books on my Kindle, I like to highlight interesting sections.  These
 highlights are stored in a file called `My Clippings.txt` on the Kindle.  This
-project takes that file as input, and transforms it to a JSON or Markdown
-output.  Other formats are planned (e.g. org-mode, tex bibliography, sql, etc).
+project takes that file as input, and transforms it to a JSON, Markdown, or
+org-mode output.  Other formats are planned (e.g. tex bibliography, sql, etc).
 
 ```
 kindle-highlight-parser
@@ -25,6 +25,13 @@ go get -u github.com/honza/kindle-highlight-parser
 ```
 
 Or grab a prebuilt binary from [GitHub][1].
+
+Output types
+------------
+
+* json
+* markdown
+* org-mode
 
 Todo
 ----

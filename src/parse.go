@@ -108,7 +108,7 @@ func TruncateBookTitle(s string) string {
 }
 
 func ValidateOutputFormat(output string) error {
-	validOuputs := []string{"markdown", "json"}
+	validOuputs := []string{"markdown", "json", "org"}
 
 	for _, v := range validOuputs {
 		if output == v {
@@ -299,6 +299,11 @@ func Format(w io.Writer, data Highlights, format string) error {
 		}
 	case "markdown":
 		err := EmitMarkdown(w, data)
+		if err != nil {
+			return err
+		}
+	case "org":
+		err := EmitOrg(w, data)
 		if err != nil {
 			return err
 		}
