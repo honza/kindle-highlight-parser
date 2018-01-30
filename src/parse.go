@@ -138,6 +138,10 @@ func removeEmptyStrings(s []string) []string {
 			continue
 		}
 
+		if len(v) == 1 {
+			continue
+		}
+
 		res = append(res, v)
 	}
 
@@ -146,7 +150,7 @@ func removeEmptyStrings(s []string) []string {
 }
 
 func trim(s string) string {
-	return strings.Trim(s, " ()\ufeff")
+	return strings.Trim(s, " ()\ufeff\n\r")
 
 }
 
@@ -186,6 +190,15 @@ func ParseTimestamp(date string) time.Time {
 
 func ParseHighlight(line string) (Highlight, error) {
 	sublines := splitAndRemove(line, "\n")
+
+	if len(sublines) == 0 {
+		return Highlight{}, nil
+	}
+	isBookmark := strings.Contains(sublines[1], "Bookmark on page")
+
+	if isBookmark {
+		return Highlight{}, nil
+	}
 
 	if len(sublines) != 3 {
 		return Highlight{}, errors.New("Missing content")
@@ -257,11 +270,17 @@ func Parse(fileContents []byte) (Highlights, error) {
 		highlight, err := ParseHighlight(line)
 
 		if err != nil {
-			continue
+			return Highlights{}, err
 		}
 
 		name := highlight.Book.Author.Name
 		title := highlight.Book.Title
+
+		// Empty highlight (bookmark or similar)
+		if name == "" && title == "" {
+			continue
+		}
+
 		single := Single{Location: highlight.Location, Timestamp: highlight.Timestamp, Content: highlight.Content}
 
 		existing, present := highlights[name]
