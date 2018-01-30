@@ -262,13 +262,12 @@ func Parse(fileContents []byte) (Highlights, error) {
 
 		name := highlight.Book.Author.Name
 		title := highlight.Book.Title
+		single := Single{Location: highlight.Location, Timestamp: highlight.Timestamp, Content: highlight.Content}
 
 		existing, present := highlights[name]
 
 		if present {
 			existingTitle, presentTitle := existing[title]
-
-			single := Single{Location: highlight.Location, Timestamp: highlight.Timestamp, Content: highlight.Content}
 
 			if presentTitle {
 				existingTitle = append(existingTitle, single)
@@ -278,7 +277,8 @@ func Parse(fileContents []byte) (Highlights, error) {
 			}
 			existing[title] = existingTitle
 		} else {
-			existing = NewAuthor{title: NewBook{}}
+			existing = map[string]NewBook{}
+			existing[title] = []Single{single}
 		}
 
 		highlights[name] = existing
