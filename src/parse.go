@@ -210,14 +210,15 @@ func ParseHighlight(line string) (Highlight, error) {
 	if len(sublines) == 0 {
 		return Highlight{}, nil
 	}
-	isBookmark := strings.Contains(sublines[1], "Bookmark on page")
+
+	isBookmark := strings.Contains(sublines[1], "Your Bookmark on ")
 
 	if isBookmark {
 		return Highlight{}, nil
 	}
 
 	if len(sublines) != 3 {
-		return Highlight{}, errors.New("Missing content")
+		return Highlight{}, errors.New("Unable to parse line: '" + line + "'")
 	}
 
 	titleAndAuthorLine := sublines[0]
@@ -357,6 +358,11 @@ func RunParse(w io.Writer, filename string, output string) error {
 	}
 
 	data, err := Parse(fileContents)
+
+	if err != nil {
+		return err
+	}
+
 	err = Format(w, data, output)
 
 	if err != nil {
