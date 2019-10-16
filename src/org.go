@@ -26,9 +26,9 @@ const ORG_WIDTH = 79
 
 func SingleEmitOrg(w io.Writer, single Single) error {
 	fmt.Fprint(w, "\n")
-	fmt.Fprint(w, word_wrap(single.Content, ORG_WIDTH, "    "))
+	fmt.Fprint(w, word_wrap(single.Content, ORG_WIDTH, ""))
 	fmt.Fprint(w, "\n\n")
-	fmt.Fprintf(w, "    %s", FormatLocation(single.Location))
+	fmt.Fprintf(w, "%s", FormatLocation(single.Location))
 	fmt.Fprint(w, single.Timestamp.String())
 	fmt.Fprint(w, "\n\n")
 
