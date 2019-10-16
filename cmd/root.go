@@ -27,6 +27,7 @@ import (
 const Version = "0.2.0"
 
 var OutputType string
+var Since string
 
 var RootCmd = &cobra.Command{
 	Use:     "kindle-highlight-parser <input file>",
@@ -35,7 +36,7 @@ var RootCmd = &cobra.Command{
 	Version: Version,
 	Run: func(cmd *cobra.Command, args []string) {
 		w := new(bytes.Buffer)
-		result := src.RunParse(w, args[0], OutputType)
+		result := src.RunParse(w, args[0], OutputType, Since)
 		if result != nil {
 			fmt.Println("ERROR:", result)
 			os.Exit(1)
@@ -48,5 +49,7 @@ var RootCmd = &cobra.Command{
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&OutputType, "output", "o",
 		"markdown", "output format")
+	RootCmd.PersistentFlags().StringVarP(&Since, "since", "s",
+		"", "only output highlights since date")
 
 }

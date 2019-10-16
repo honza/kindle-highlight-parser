@@ -15,6 +15,7 @@ Usage:
 Flags:
   -h, --help            help for kindle-highlight-parser
   -o, --output string   output format (default "markdown")
+  -s, --since string    only output highlights since date
 ```
 
 Install

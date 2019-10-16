@@ -278,7 +278,7 @@ func ParseHighlight(line string) (Highlight, error) {
 
 }
 
-func Parse(fileContents []byte) (Highlights, error) {
+func Parse(fileContents []byte, since time.Time) (Highlights, error) {
 	fileContentsString := byteArrayToString(fileContents)
 	lines := splitAndRemove(fileContentsString, "==========")
 	highlights := Highlights{}
@@ -288,6 +288,10 @@ func Parse(fileContents []byte) (Highlights, error) {
 
 		if err != nil {
 			return Highlights{}, err
+		}
+
+		if highlight.Timestamp.Before(since) {
+			continue
 		}
 
 		name := highlight.Book.Author.Name
@@ -345,10 +349,24 @@ func Format(w io.Writer, data Highlights, format string) error {
 	return nil
 }
 
-func RunParse(w io.Writer, filename string, output string) error {
+func RunParse(w io.Writer, filename string, output string, since string) error {
 	v := ValidateOutputFormat(output)
 	if v != nil {
 		return v
+	}
+
+	var sinceObj time.Time
+	if since == "" {
+		sinceObj = time.Unix(1, 1)
+
+	} else {
+		var err error
+		sinceObj, err = time.Parse("2006-01-02", since)
+
+		if err != nil {
+			return err
+		}
+
 	}
 
 	fileContents, err := ioutil.ReadFile(filename)
@@ -357,7 +375,7 @@ func RunParse(w io.Writer, filename string, output string) error {
 		return err
 	}
 
-	data, err := Parse(fileContents)
+	data, err := Parse(fileContents, sinceObj)
 
 	if err != nil {
 		return err
