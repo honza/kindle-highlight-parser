@@ -26,13 +26,9 @@ import (
 const ORG_WIDTH = 79
 
 func SingleEmitOrg(w io.Writer, single Single) error {
-	fmt.Fprint(w, "\n")
-	fmt.Fprint(w, word_wrap(single.Content, ORG_WIDTH, ""))
-	fmt.Fprint(w, "\n\n")
-	fmt.Fprintf(w, "%s", FormatLocation(single.Location))
 	EmitTimestamp(w, single.Timestamp)
-	fmt.Fprint(w, "\n\n")
-
+	fmt.Fprint(w, word_wrap(single.Content, ORG_WIDTH, ""))
+	fmt.Fprint(w, "\n")
 	return nil
 }
 
@@ -76,7 +72,6 @@ func EmitOrg(w io.Writer, hs Highlights) error {
 		if err != nil {
 			return err
 		}
-		fmt.Fprint(w, "\n")
 
 	}
 
@@ -85,6 +80,6 @@ func EmitOrg(w io.Writer, hs Highlights) error {
 
 func EmitTimestamp(w io.Writer, stamp time.Time) error {
 	f := stamp.Format("2006-01-02 Mon 15:04:05")
-	fmt.Fprintf(w, "<%s>", f)
+	fmt.Fprintf(w, "*** <%s>\n", f)
 	return nil
 }
