@@ -48,8 +48,8 @@ var RootCmd = &cobra.Command{
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&OutputType, "output", "o",
-		"markdown", "output format")
+		"markdown", `output format: "org", "markdown", or "json"`)
 	RootCmd.PersistentFlags().StringVarP(&Since, "since", "s",
-		"", "only output highlights since date")
+		"", "only output highlights since date (e.g. \"2019-03-21\")")
 
 }
