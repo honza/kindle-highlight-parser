@@ -42,7 +42,7 @@ var RootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		fmt.Println(w)
+		fmt.Print(w)
 	},
 }
 
