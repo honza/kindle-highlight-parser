@@ -24,7 +24,7 @@ import (
 	"os"
 )
 
-const Version = "0.3.0"
+const Version = "0.4.0"
 
 var OutputType string
 var Since string
