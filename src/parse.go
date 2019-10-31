@@ -349,7 +349,7 @@ func Format(w io.Writer, data Highlights, format string) error {
 	return nil
 }
 
-func RunParse(w io.Writer, filename string, output string, since string) error {
+func RunParse(w io.Writer, filename, output, since string) error {
 	v := ValidateOutputFormat(output)
 	if v != nil {
 		return v
