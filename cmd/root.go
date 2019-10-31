@@ -17,7 +17,7 @@
 package cmd
 
 import (
-	"bytes"
+	"bufio"
 	"fmt"
 	"github.com/honza/kindle-highlight-parser/src"
 	"github.com/spf13/cobra"
@@ -28,6 +28,7 @@ const Version = "0.3.0"
 
 var OutputType string
 var Since string
+var Filename string
 
 var RootCmd = &cobra.Command{
 	Use:     "kindle-highlight-parser <input file>",
@@ -35,14 +36,39 @@ var RootCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Version: Version,
 	Run: func(cmd *cobra.Command, args []string) {
-		w := new(bytes.Buffer)
-		result := src.RunParse(w, args[0], OutputType, Since)
+		var writer *bufio.Writer
+		var file *os.File
+
+		if Filename != "" {
+			_, err := os.Stat(Filename)
+
+			if err == nil {
+				fmt.Println("ERROR: File exists")
+				os.Exit(1)
+			}
+
+			file, err = os.Create(Filename)
+
+			if err != nil {
+				fmt.Println("ERROR:", err)
+				os.Exit(1)
+			}
+		} else {
+			file = os.Stdout
+		}
+
+		writer = bufio.NewWriter(file)
+
+		defer file.Close()
+		defer writer.Flush()
+
+		result := src.RunParse(writer, args[0], OutputType, Since)
+
 		if result != nil {
 			fmt.Println("ERROR:", result)
 			os.Exit(1)
 		}
 
-		fmt.Print(w)
 	},
 }
 
@@ -51,5 +77,7 @@ func init() {
 		"markdown", `output format: "org", "markdown", or "json"`)
 	RootCmd.PersistentFlags().StringVarP(&Since, "since", "s",
 		"", "only output highlights since date (e.g. \"2019-03-21\")")
+	RootCmd.PersistentFlags().StringVarP(&Filename, "filename", "f",
+		"", `save output to a file`)
 
 }
