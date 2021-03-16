@@ -211,7 +211,7 @@ func ParseHighlight(line string) (Highlight, error) {
 		return Highlight{}, nil
 	}
 
-	isBookmark := strings.Contains(sublines[1], "Your Bookmark on ")
+	isBookmark := strings.HasPrefix(sublines[1], "- Your Bookmark ")
 
 	if isBookmark {
 		return Highlight{}, nil
